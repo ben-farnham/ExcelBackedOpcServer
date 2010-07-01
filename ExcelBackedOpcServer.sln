@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExcelBackedOpcServer", "ExcelBackedOpcServer\ExcelBackedOpcServer.vcproj", "{7FBE0E59-3E59-41CD-99E5-4C54039D112A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug Console|Win32 = Debug Console|Win32
+		Release Console|Win32 = Release Console|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7FBE0E59-3E59-41CD-99E5-4C54039D112A}.Debug Console|Win32.ActiveCfg = Debug Console|Win32
+		{7FBE0E59-3E59-41CD-99E5-4C54039D112A}.Debug Console|Win32.Build.0 = Debug Console|Win32
+		{7FBE0E59-3E59-41CD-99E5-4C54039D112A}.Release Console|Win32.ActiveCfg = Release Console|Win32
+		{7FBE0E59-3E59-41CD-99E5-4C54039D112A}.Release Console|Win32.Build.0 = Release Console|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
