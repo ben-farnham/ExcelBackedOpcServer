@@ -25,6 +25,7 @@
 
 #include "Da/ServerDaAddressSpaceElement.h"
 #include "Da/ServerDaProperty.h"
+#include "ExcelIntegration.h"
 
 using namespace SoftingOPCToolboxServer;
 
@@ -33,6 +34,7 @@ using namespace SoftingOPCToolboxServer;
 //-----------------------------------------------------------------------------
 class MyDaAddressSpaceElement : public DaAddressSpaceElement
 {
+
 public:
 	MyDaAddressSpaceElement(
 		tstring& anItemID,
@@ -40,14 +42,14 @@ public:
 		unsigned long anUserData,
 		unsigned long anObjectHandle, 
 		unsigned long aParentHandle) : 
-		DaAddressSpaceElement(
-			anItemID, aName, anUserData, anObjectHandle, aParentHandle)
+		DaAddressSpaceElement(anItemID, aName, anUserData, anObjectHandle, aParentHandle),
+		m_nExcelRowNumber(0)
 	{
-	} // end ctr
+	}	
 	
 	MyDaAddressSpaceElement(void)
 	{		
-	} // end ctr
+	}
 	
 	virtual ~MyDaAddressSpaceElement(void)
 	{
@@ -56,20 +58,20 @@ public:
 			DaProperty* property = m_properties[index];
 			if (property != NULL){
 				delete property;
-			} // end if
-		} // end if
-	} // end destructor
+			}
+		}
+	}
 
 	
 	virtual void addedToAddressSpace(void)
 	{
 		// add your notification code here
-	} // end addedToAddressSpace
+	}
 
 	virtual void removedFromAddressSpace(void)
 	{
 		// add your notification code here
-	} // end removedFromAddressSpace
+	}
 	
 	void getPropertyValue(DaRequest* aRequest)
 	{
@@ -82,30 +84,68 @@ public:
 	
 			aRequest->setValue(aValue);
 			aRequest->setResult(S_OK);
-		} // end if ... else
-
-	} // end getPropertyValue
+		}
+	}
 	
 	long queryProperties(std::vector<DaProperty*>& aPropertyList)
 	{
 		aPropertyList = m_properties;
 		return S_OK;
-	} // end QueryProperties
+	}
 	
 	long addProperty(DaProperty* aProperty)
 	{
 		if (aProperty == NULL)
 		{
 			return S_FALSE;
-		} // end if
+		}
 
 		m_properties.push_back(aProperty);
 		return S_OK;
-	} // end AddProperty
+	}
+
+	void SetExcelRowNumber(const unsigned int nExcelRowNumber)
+	{
+		m_nExcelRowNumber = nExcelRowNumber;
+	}
+
+	bool GetValueCellId(std::string& sResult)
+	{
+		static const std::string sExcelValuesColumn = "B";
+
+		if(m_nExcelRowNumber < 1)
+		{
+			sResult = "No Excel Row Specified";
+			return false;
+		}
+
+		std::stringstream sExcelCellRow;
+		sExcelCellRow << m_nExcelRowNumber;
+		sResult = (sExcelValuesColumn + sExcelCellRow.str());
+		return true;
+	}
+
+	bool GetExcelCellValue(ValueQT& rValue)
+	{
+		long nResult = S_FALSE;
+		std::string sCellId;
+		if(GetValueCellId(sCellId))
+		{
+			std::string sCellValue;
+			if(ExcelIntegration::GetInstance()->GetCellValue(sCellId, sCellValue))
+			{
+				rValue.setData(Variant(sCellValue.c_str()), EnumQuality_GOOD, DateTime());
+				return true;
+			}			
+		}
+
+		rValue.setData(Variant("Excel Integration Error"), EnumQuality_BAD, DateTime());
+		return false;
+	}
 	
 	private:
 		std::vector<DaProperty*> m_properties;
-
-};	// end class MyDaAddressSpaceElement
+		unsigned int m_nExcelRowNumber;
+};
 
 #endif

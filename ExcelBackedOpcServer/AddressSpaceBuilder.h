@@ -14,6 +14,7 @@ public:
 	size_t Build(MyCreator* pCreator);
 
 private:
-	MyDaAddressSpaceElement* CreateAddressSpaceElement(MyCreator* pCreator, const tstring& sName, const unsigned int nIndex);
+	MyDaAddressSpaceElement* CreateAddressSpaceElement(MyCreator* pCreator, const tstring& sName, const unsigned int nExcelRowNumber);
+	DaProperty* CreateDescriptionProperty(void) const;
 	DaAddressSpaceRoot* m_pRoot;
 };

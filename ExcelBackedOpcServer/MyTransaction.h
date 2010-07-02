@@ -70,8 +70,11 @@ public:
 				{	
 					std::cout << "MyTransaction getting value..." << std::endl;
 
-					long nResult = S_FALSE;
-					
+					ValueQT vqtCacheValue;
+					long nResult = element->GetExcelCellValue(vqtCacheValue)? S_OK: S_FALSE;
+					m_requestList[i]->setValue(vqtCacheValue);
+					m_requestList[i]->setResult(nResult);
+/*					
 					string sCellValue("woohoo");
 					if(ExcelIntegration::GetInstance()->GetCellValue("A1", sCellValue))
 					{
@@ -81,6 +84,7 @@ public:
 						m_requestList[i]->setValue(cacheValue);
 
 						nResult = S_OK;
+
 					}
 					else
 					{
@@ -88,6 +92,7 @@ public:
 					}
 					
 					m_requestList[i]->setResult(nResult);	
+*/
 				}
 				else
 				{

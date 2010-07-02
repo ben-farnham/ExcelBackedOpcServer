@@ -31,7 +31,7 @@ size_t AddressSpaceBuilder::Build(MyCreator* pCreator)
 		string sCellValue("undefined");
 		if(pExcel->GetCellValue(sCellId, sCellValue))
 		{
-			MyDaAddressSpaceElement* pElement = CreateAddressSpaceElement(pCreator, sCellValue, i);
+			MyDaAddressSpaceElement* pElement = CreateAddressSpaceElement(pCreator, sCellValue, i+1);
 			m_pRoot->addChild(pElement);
 			nAddressSpaceSz++;
 		}				
@@ -40,30 +40,35 @@ size_t AddressSpaceBuilder::Build(MyCreator* pCreator)
 	return nAddressSpaceSz;
 }
 
-MyDaAddressSpaceElement* AddressSpaceBuilder::CreateAddressSpaceElement(MyCreator* pCreator, const tstring& sName, const unsigned int nIndex)
+MyDaAddressSpaceElement* AddressSpaceBuilder::CreateAddressSpaceElement(MyCreator* pCreator, const tstring& sName, const unsigned int nExcelRowNumber)
 {
 	MyDaAddressSpaceElement* pElement = static_cast<MyDaAddressSpaceElement*>(pCreator->createMyDaAddressSpaceElement());
 	pElement->setName(const_cast<tstring&>(sName));
 	pElement->setAccessRights(EnumAccessRights_READWRITEABLE);
 	pElement->setDatatype(VT_BSTR);
 	pElement->setIoMode(EnumIoMode_POLL);	
+	pElement->SetExcelRowNumber(nExcelRowNumber);
 
 	ValueQT value(Variant(_T("Initial value ")), EnumQuality_GOOD, DateTime());
 	pElement->valueChanged(value);
 
+	pElement->addProperty(CreateDescriptionProperty());
+
+	return pElement;
+}
+
+DaProperty* AddressSpaceBuilder::CreateDescriptionProperty(void) const
+{
 	DaProperty* pProperty = new DaProperty();
-	pProperty->setId(nIndex);
+	pProperty->setId(EnumPropertyId_ITEM_DESCRIPTION);
 	
 	tstring propName(_T("Description"));
 	pProperty->setName(propName);
 	
-	tstring propDescription(_T("Element Description"));
-	pProperty->setDescription(propDescription);
+	pProperty->setDescription(tstring(_T("Element Description")));
 	pProperty->setItemId(propName);
 	pProperty->setDatatype(VT_BSTR);
 	pProperty->setAccessRights(EnumAccessRights_READABLE);
 
-	pElement->addProperty(pProperty);
-
-	return pElement;
+	return pProperty;
 }
