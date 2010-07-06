@@ -3,33 +3,41 @@
 #include <iostream>
 #include <ole2.h>
 #include <comstl/util/initialisers.hpp>
-
+#include <pantheios/pantheios.hpp>
 
 #include "ExcelIntegration.h"
 
 using namespace vole;
-
 using namespace std;
+using namespace pantheios;
 
 ExcelIntegration* gspTheInstance = NULL;
 
 ExcelIntegration::ExcelIntegration()
-:m_ExcelApplication(GetExcelDispatchPtr(), false), m_pActiveSheet(NULL)
+:m_ExcelApplication(GetExcelDispatchPtr(), true), m_pActiveSheet(NULL)
 {
-	cout << "ExcelIntegration::ExcelIntegration+" << endl;
+	log_NOTICE("ExcelIntegration::ExcelIntegration+");
+	log_NOTICE("does the app have active sheet? [", (m_ExcelApplication.has_member(L"Activesheet")?"YES":"NO"), "]");
 
-	cout << "does the app have active sheet? ["<< m_ExcelApplication.has_member(L"Activesheet") <<"]" << endl;
-	m_pActiveSheet = new object(m_ExcelApplication.get_property<object>(L"Activesheet"));
+	object oSheet = m_ExcelApplication.get_property<object>(L"Activesheet");
+
+	if(oSheet.is_nothing())
+	{
+		pantheios::log_CRITICAL("ExcelIntegration::ExcelIntegration failed to get valid Activesheet property");		
+		exit(EXIT_FAILURE);
+	}
+
+	m_pActiveSheet = new object(oSheet);
 	string sSheetName = m_pActiveSheet->get_property<string>(L"Name");
-	cout << "active sheet name ["<< sSheetName.c_str() <<"]" << endl;
+	log_NOTICE("active sheet name [", sSheetName.c_str(), "]");
 
-	cout << "ExcelIntegration::ExcelIntegration-" << endl;
+	log_NOTICE("ExcelIntegration::ExcelIntegration-");
 }
 
 ExcelIntegration::~ExcelIntegration(void)
 {
-	cout << "ExcelIntegration::~ExcelIntegration+" << endl;
-	cout << "ExcelIntegration::~ExcelIntegration-" << endl;
+	log_NOTICE("ExcelIntegration::~ExcelIntegration+");
+	log_NOTICE("ExcelIntegration::~ExcelIntegration-");
 }
 
 ExcelIntegration* ExcelIntegration::GetInstance()
@@ -51,18 +59,17 @@ IDispatch* ExcelIntegration::GetExcelDispatchPtr() const
 	IDispatch* pExcelDispatch = NULL;
 	if(SUCCEEDED(GetActiveObject(sExcelClsid, NULL, &pExcelUnknown)))
 	{
-		cout << "GetExcelDispatchPtr - successfully connected to running excel instance" << endl;
+		log_NOTICE("GetExcelDispatchPtr - successfully connected to running excel instance");
 
 		if(SUCCEEDED(pExcelUnknown->QueryInterface(IID_IDispatch, reinterpret_cast<void**>(&pExcelDispatch))))
 		{
-			cout << "GetExcelDispatchPtr - successfully got dispatch pointer instance" << endl;
+			log_NOTICE("GetExcelDispatchPtr - successfully got dispatch pointer instance");
 		}
 	}
 
 	if(pExcelDispatch == NULL)
 	{
-		cerr << "GetExcelDispatchPtr - Failed to get automation pointer to a running instance of Excel - Is Excel running? This application will exit" << endl;
-		Sleep(3000);
+		log_CRITICAL("GetExcelDispatchPtr - Failed to get automation pointer to a running instance of Excel - Is Excel running? This application will exit");
 		exit(EXIT_FAILURE);
 	}
 
@@ -79,7 +86,7 @@ bool ExcelIntegration::GetCellValue(const string& sCellId, string& sResult)
 
 		if(oRange.is_nothing())
 		{
-			cout << "Error cellId ["<< sCellId <<"] returned NULL range" << endl;
+			log_WARNING("Error cellId [", sCellId, "] returned NULL range");
 			return false;
 		}
 
@@ -87,7 +94,7 @@ bool ExcelIntegration::GetCellValue(const string& sCellId, string& sResult)
 	}
 	catch(vole_exception e)
 	{
-		cout << "Error: VOLE exception: " << e.what() << endl;
+		log_ERROR("Error: VOLE exception: ", e.what());
 		return false;
 	}
 
@@ -98,6 +105,6 @@ const char* ExcelIntegration::FormatRangeBuffer(char* const pBuffer, size_t sz, 
 {
 	memset(static_cast<void*>(pBuffer), 0, sz);
 	sprintf_s(pBuffer, sz, "%s:%s", sCellId.c_str(), sCellId.c_str());
-	cout << "formatted range is ["<< pBuffer <<"]" << endl;
+	log_NOTICE("formatted range is [", pBuffer, "]");
 	return pBuffer;
 }

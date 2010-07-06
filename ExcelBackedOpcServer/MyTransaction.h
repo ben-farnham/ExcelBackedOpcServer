@@ -28,9 +28,12 @@
 #include "ExcelIntegration.h"
 #include <iostream>
 
+#include <pantheios/pantheios.hpp>
+
 
 using namespace SoftingOPCToolboxServer;
 using namespace std;
+using namespace pantheios;
 
 class MyTransaction : public DaTransaction {
 
@@ -56,48 +59,30 @@ public:
 		size_t count = m_requestList.size();
 		
 		for(size_t i = 0; i < count; i++){
+
+			DaRequest* pReq = m_requestList[i];
 			
-			MyDaAddressSpaceElement* element = 
-				(MyDaAddressSpaceElement*)m_requestList[i]->getAddressSpaceElement();
+			MyDaAddressSpaceElement* pElem = (MyDaAddressSpaceElement*)pReq->getAddressSpaceElement();
 			
-			if (element == NULL)
+			if (pElem == NULL)
 			{
-				m_requestList[i]->setResult(E_FAIL);
+				pReq->setResult(E_FAIL);
 			}
 			else
 			{
-				if (m_requestList[i]->getPropertyId() == 0)
+				if (pReq->getPropertyId() == 0)
 				{	
-					std::cout << "MyTransaction getting value..." << std::endl;
+					log_NOTICE("MyTransaction::handleReadRequests getting value for element [", pElem->getName(),"]");
 
 					ValueQT vqtCacheValue;
-					long nResult = element->GetExcelCellValue(vqtCacheValue)? S_OK: S_FALSE;
-					m_requestList[i]->setValue(vqtCacheValue);
-					m_requestList[i]->setResult(nResult);
-/*					
-					string sCellValue("woohoo");
-					if(ExcelIntegration::GetInstance()->GetCellValue("A1", sCellValue))
-					{
-						cout << "Got cell value ["<< sCellValue <<"]" << endl;
-
-						ValueQT cacheValue(Variant(sCellValue.c_str()), EnumQuality_GOOD, DateTime());					
-						m_requestList[i]->setValue(cacheValue);
-
-						nResult = S_OK;
-
-					}
-					else
-					{
-						cout << "Failed to get cell value" << endl;
-					}
-					
-					m_requestList[i]->setResult(nResult);	
-*/
+					long nResult = pElem->GetExcelCellValue(vqtCacheValue)? S_OK: S_FALSE;
+					pReq->setValue(vqtCacheValue);
+					pReq->setResult(nResult);
 				}
 				else
 				{
 					// the element's property will handle this request
-					element->getPropertyValue(m_requestList[i]);
+					pElem->getPropertyValue(pReq);
 				}
 			}
 		}

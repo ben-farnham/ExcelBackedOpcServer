@@ -44,7 +44,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(STLSOFT)\include&quot;;&quot;$(VOLE)\include&quot;;&quot;C:\Program Files\Softing\OPCToolbox\V42x\Windows\C++\src\&quot;;&quot;C:\Program Files\Softing\OPCToolbox\V42x\Windows\C++\src\server&quot;"
+				AdditionalIncludeDirectories="&quot;$(PANTHEIOS_ROOT)/include&quot;;&quot;$(STLSOFT)\include&quot;;&quot;$(VOLE)\include&quot;;&quot;C:\Program Files\Softing\OPCToolbox\V42x\Windows\C++\src\&quot;;&quot;C:\Program Files\Softing\OPCToolbox\V42x\Windows\C++\src\server&quot;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_WIN32_DCOM;STRICT;_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -76,7 +76,7 @@
 				OutputFile="$(OutDir)\MyFirstOpcServer.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;C:\Program Files\Softing\OPCToolbox\V42x\Windows\C++\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(PANTHEIOS_ROOT)/lib&quot;;&quot;C:\Program Files\Softing\OPCToolbox\V42x\Windows\C++\lib&quot;"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)\vc90.pdb"
@@ -135,7 +135,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(STLSOFT)\include&quot;;&quot;$(VOLE)\include&quot;;&quot;C:\Program Files\Softing\OPCToolbox\V42x\Windows\C++\src\&quot;;&quot;C:\Program Files\Softing\OPCToolbox\V42x\Windows\C++\src\server&quot;"
+				AdditionalIncludeDirectories="&quot;$(PANTHEIOS_ROOT)/include&quot;;&quot;$(STLSOFT)\include&quot;;&quot;$(VOLE)\include&quot;;&quot;C:\Program Files\Softing\OPCToolbox\V42x\Windows\C++\src\&quot;;&quot;C:\Program Files\Softing\OPCToolbox\V42x\Windows\C++\src\server&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_WIN32_DCOM;CONSOLE"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
@@ -164,7 +164,7 @@
 				AdditionalDependencies="TBCVS2008.lib"
 				OutputFile="$(OutDir)\MyFirstOpcServer.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;C:\Program Files\Softing\OPCToolbox\V42x\Windows\C++\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(PANTHEIOS_ROOT)/lib&quot;;&quot;C:\Program Files\Softing\OPCToolbox\V42x\Windows\C++\lib&quot;"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="false"
 				SubSystem="1"
@@ -220,6 +220,10 @@
 			</File>
 			<File
 				RelativePath=".\OpcServer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Pantheios_implicit_link.cpp"
 				>
 			</File>
 			<File

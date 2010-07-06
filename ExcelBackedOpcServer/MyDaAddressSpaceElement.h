@@ -27,6 +27,9 @@
 #include "Da/ServerDaProperty.h"
 #include "ExcelIntegration.h"
 
+#include <pantheios/pantheios.hpp>
+
+using namespace pantheios;
 using namespace SoftingOPCToolboxServer;
 
 //-----------------------------------------------------------------------------
@@ -127,20 +130,27 @@ public:
 
 	bool GetExcelCellValue(ValueQT& rValue)
 	{
-		long nResult = S_FALSE;
+		log_NOTICE("MyDaAddressSpaceElement::GetExcelCellValue+");
+		bool bResult = false;
 		std::string sCellId;
 		if(GetValueCellId(sCellId))
 		{
 			std::string sCellValue;
 			if(ExcelIntegration::GetInstance()->GetCellValue(sCellId, sCellValue))
 			{
+				log_NOTICE("MyDaAddressSpaceElement::GetExcelCellValue got cell value [", sCellValue,"]");
 				rValue.setData(Variant(sCellValue.c_str()), EnumQuality_GOOD, DateTime());
-				return true;
+				bResult = true;
 			}			
 		}
 
-		rValue.setData(Variant("Excel Integration Error"), EnumQuality_BAD, DateTime());
-		return false;
+		if(!bResult)
+		{
+			rValue.setData(Variant("Excel Integration Error"), EnumQuality_BAD, DateTime());
+		}
+		
+		log_NOTICE("MyDaAddressSpaceElement::GetExcelCellValue- result [", (bResult?"T":"F"),"]");
+		return bResult;
 	}
 	
 	private:

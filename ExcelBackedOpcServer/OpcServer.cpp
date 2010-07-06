@@ -24,6 +24,7 @@
 #include "OpcServer.h"
 #include "ServerCommon.h"
 #include "AddressSpaceBuilder.h"
+#include <pantheios/pantheios.hpp>
 
 OpcServer* instance = NULL;
 
@@ -38,6 +39,7 @@ void createOpcServer(void)
 {
 	if (instance == NULL)
 	{
+		pantheios::log_NOTICE("createOpcServer - constructing OPCServer singleton instance");
 		instance = new OpcServer();
 	} // end if
 
@@ -47,6 +49,7 @@ void createOpcServer(void)
 void destroyOpcServer(void)
 {
 	if (instance != NULL){
+		pantheios::log_NOTICE("destroyOpcServer - deleting OPCServer singleton instance");
 		delete instance;
 		instance = NULL;
 	} // end if
@@ -63,17 +66,22 @@ long API_CALL handleShutdownRequest(void)
 
 OpcServer::OpcServer(void)
 {
+	pantheios::log_NOTICE("OpcServer::OpcServer+");
 	m_pDaSimulationElement = NULL;
+	pantheios::log_NOTICE("OpcServer::OpcServer-");
 } // end constructor
 
 
 OpcServer::~OpcServer(void)
 {
+	pantheios::log_NOTICE("OpcServer::~OpcServer+");
+	pantheios::log_NOTICE("OpcServer::~OpcServer-");
 } // end destructor
 
  
 long OpcServer::initialize(void)
 {
+	pantheios::log_NOTICE("OpcServer::initialize+");
 	getApp()->setVersionOtb(422);
 	getApp()->setAppType(EnumApplicationType_EXECUTABLE);
 
@@ -92,6 +100,7 @@ long OpcServer::initialize(void)
 	getApp()->setPropertyDelimiter(_T('/'));
 	getApp()->ShutdownRequest = handleShutdownRequest;
 
+	pantheios::log_NOTICE("OpcServer::initialize-");
 	return S_OK;
 
 } // end initialize

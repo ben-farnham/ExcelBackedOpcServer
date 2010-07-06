@@ -2,16 +2,23 @@
 #include "AddressSpaceBuilder.h"
 #include "ExcelIntegration.h"
 #include <iostream>
+#include <pantheios/pantheios.hpp>
+#include <pantheios/inserters.hpp>
 
 using namespace std;
+using namespace pantheios;
 
 AddressSpaceBuilder::AddressSpaceBuilder(DaAddressSpaceRoot* daRoot)
 :m_pRoot(daRoot)
 {
+	log_NOTICE("AddressSpaceBuilder::AddressSpaceBuilder+");
+	log_NOTICE("AddressSpaceBuilder::AddressSpaceBuilder-");
 }
 
 AddressSpaceBuilder::~AddressSpaceBuilder(void)
 {
+	log_NOTICE("AddressSpaceBuilder::~AddressSpaceBuilder+");
+	log_NOTICE("AddressSpaceBuilder::~AddressSpaceBuilder-");
 }
 
 /**
@@ -19,6 +26,7 @@ AddressSpaceBuilder::~AddressSpaceBuilder(void)
 */
 size_t AddressSpaceBuilder::Build(MyCreator* pCreator)
 {
+	log_NOTICE("AddressSpaceBuilder::Build+");
 	ExcelIntegration* pExcel = ExcelIntegration::GetInstance();
 
 	int nAddressSpaceSz = 0;
@@ -37,11 +45,13 @@ size_t AddressSpaceBuilder::Build(MyCreator* pCreator)
 		}				
 	}
 
+	log_NOTICE("AddressSpaceBuilder::Build- result [", integer(nAddressSpaceSz),"]");
 	return nAddressSpaceSz;
 }
 
 MyDaAddressSpaceElement* AddressSpaceBuilder::CreateAddressSpaceElement(MyCreator* pCreator, const tstring& sName, const unsigned int nExcelRowNumber)
 {
+	log_NOTICE("AddressSpaceBuilder::CreateAddressSpaceElement+ name [", sName,"]");
 	MyDaAddressSpaceElement* pElement = static_cast<MyDaAddressSpaceElement*>(pCreator->createMyDaAddressSpaceElement());
 	pElement->setName(const_cast<tstring&>(sName));
 	pElement->setAccessRights(EnumAccessRights_READWRITEABLE);
@@ -54,6 +64,7 @@ MyDaAddressSpaceElement* AddressSpaceBuilder::CreateAddressSpaceElement(MyCreato
 
 	pElement->addProperty(CreateDescriptionProperty());
 
+	log_NOTICE("AddressSpaceBuilder::CreateAddressSpaceElement-");
 	return pElement;
 }
 

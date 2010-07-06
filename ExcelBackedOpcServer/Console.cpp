@@ -22,10 +22,16 @@
 #include "stdafx.h"
 
 #include "OpcServer.h"
+#include <comstl/util/initialisers.hpp> // for comstl::com_initialiser;
+#include <pantheios/pantheios.hpp>
+#include <pantheios/backends/bec.file.h>
 
 
 HANDLE g_endEvent = 0;
 
+
+extern "C" const char PANTHEIOS_FE_PROCESS_IDENTITY[] = "ExcelBackedOpcServer";
+char gscLogFilePath[MAX_PATH];
 
 BOOL WINAPI ControlHandler(IN unsigned long crtlType)	// control type
 {
@@ -45,10 +51,52 @@ BOOL WINAPI ControlHandler(IN unsigned long crtlType)	// control type
 
 } // end controlHandler
 
+const char* const GetLogFilePath()
+{
+	time_t tmNow = time(NULL);
+	
+	char cTmString[MAX_PATH];
+	memset(cTmString, MAX_PATH, 0);
+	strftime(cTmString, MAX_PATH, "%Y_%m_%d___%H_%M_%S", localtime(&tmNow));
+
+	memset(gscLogFilePath, 0, MAX_PATH);
+	sprintf_s(gscLogFilePath, MAX_PATH, "C:\\TEMP\\%s___ExcelBackedOpcServer.log", cTmString);
+
+	std::cout << "logfile ["<< gscLogFilePath <<"]" << std::endl;	
+	return gscLogFilePath;
+}
+
+void InitialiseLogging()
+{
+	std::cout << "initialising logging..." << std::endl;
+
+	try
+	{
+		if(pantheios::pantheios_init() < 0)
+		{
+			std::cout << "ERROR failed to initialise logger" << std::endl;
+		}
+		else
+		{
+			pantheios_be_file_setFilePath(GetLogFilePath(), PANTHEIOS_BE_FILE_F_TRUNCATE, PANTHEIOS_BE_FILE_F_TRUNCATE, PANTHEIOS_BEID_LOCAL);
+		}
+		pantheios::log_NOTICE("InitialiseLogging: logging initialised");
+		
+		std::cout << "logging initialised" << std::endl;
+	}
+	catch(...)
+	{
+		pantheios::logputs(pantheios::emergency, "Unexpected unknown error occurred whilst initialising logging");
+		std::cout << "logging failed" << std::endl;
+	}
+}
+
 
 int _tmain(int argc, _TCHAR* argv[])
 {
 	long result = S_OK;
+	//comstl::com_initialiser coinit;
+	InitialiseLogging();
 
 	g_endEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 	SetConsoleCtrlHandler(ControlHandler, TRUE);
